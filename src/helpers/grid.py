@@ -1,33 +1,22 @@
 from .vector import add_vectors
 
-def get_neighbors(grid, location, diagonal=False):
+def get_grid_val(grid, location):
+  return grid[location[0]][location[1]]
+
+def is_in_bounds(grid, location):
   width = len(grid)
   height = len(grid[0])
-  if location[0] > 0:
-    vec = tuple(add_vectors(location, (-1, 0)))
-    yield vec, grid[vec[0]][vec[1]]
-  if location[1] > 0:
-    vec = tuple(add_vectors(location, (0, -1)))
-    yield vec, grid[vec[0]][vec[1]]
-  if location[0] < width-1:
-    vec = tuple(add_vectors(location, (1, 0)))
-    yield vec, grid[vec[0]][vec[1]]
-  if location[1] < height-1:
-    vec = tuple(add_vectors(location, (0, 1)))
-    yield vec, grid[vec[0]][vec[1]]
+  return location[0] >= 0 and location[1] >= 0 and location[0] < width and location[1] < height
+
+def get_neighbors(grid, location, diagonal=False):
+  neighbor_directions = [(-1, 0), (0, -1), (1, 0), (0, 1)]
   if diagonal:
-    if location[0] > 0 and location[1] > 0:
-      vec = tuple(add_vectors(location, (-1, -1)))
-      yield vec, grid[vec[0]][vec[1]]
-    if location[0] > 0 and location[1] < height-1:
-      vec = tuple(add_vectors(location, (-1, 1)))
-      yield vec, grid[vec[0]][vec[1]]
-    if location[0] < width-1 and location[1] > 0:
-      vec = tuple(add_vectors(location, (1, -1)))
-      yield vec, grid[vec[0]][vec[1]]
-    if location[0] < width-1 and location[1] < height-1:
-      vec = tuple(add_vectors(location, (1, 1)))
-      yield vec, grid[vec[0]][vec[1]]
+    neighbor_directions += [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+  
+  for direction in neighbor_directions:
+    neighbor = add_vectors(location, direction)
+    if is_in_bounds(grid, neighbor):
+      yield neighbor, get_grid_val(grid, neighbor)
 
 def iterate_grid(grid):
   for r, row in enumerate(grid):
